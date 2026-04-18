@@ -117,8 +117,7 @@ The app is fully responsive — works on all screen sizes. The navbar collapses 
 ## 🛠️ Tech Stack
 
 **Frontend:** React 18, React Router v6, Axios, react-hot-toast, Web Audio API, Service Workers  
-**Backend:** Node.js, Express, MongoDB + Mongoose, JWT Auth, node-cron, web-push
-
+**Backend:** Node.js, Express, MongoDB + Mongoose, JWT Auth, node-cron, web-design
 ---
 
 ## 📁 Project Structure
