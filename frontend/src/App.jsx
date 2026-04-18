@@ -9,6 +9,7 @@ import TodayRevisions from './pages/TodayRevisions';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import GlobalAlarm from './components/GlobalAlarm';
 
 const PrivateRoute = ({ children }) => {
@@ -24,6 +25,7 @@ export default function App() {
       <Routes>
         <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/"         element={<PrivateRoute><Navbar /><Dashboard /></PrivateRoute>} />
         <Route path="/add"      element={<PrivateRoute><Navbar /><AddProblem /></PrivateRoute>} />
         <Route path="/problem/:id" element={<PrivateRoute><Navbar /><ProblemDetail /></PrivateRoute>} />

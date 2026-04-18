@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Register() {
   const [name, setName]         = useState('');
@@ -27,6 +28,19 @@ export default function Register() {
     setLoading(false);
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    try {
+      const res = await API.post('/auth/google', { credential: credentialResponse.credential });
+      login(res.data.token);
+      toast.success('Google sign-up successful!');
+      navigate('/');
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Google sign-up failed');
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <style>{`
@@ -47,6 +61,11 @@ export default function Register() {
         .auth-btn:disabled { opacity:.6; cursor:not-allowed; }
         .auth-footer { text-align:center; margin-top:20px; font-size:13px; color:#a0aec0; }
         .auth-link { color:#4ade80; font-weight:600; text-decoration:none; }
+        .google-wrapper { margin-top: 16px; display: flex; justify-content: center; }
+        .divider { display: flex; align-items: center; text-align: center; margin: 20px 0; color: #64748b; font-size: 13px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
       `}</style>
       <div className="auth-page">
         <div className="auth-card">
@@ -71,6 +90,18 @@ export default function Register() {
           <button className="auth-btn" onClick={handleSubmit} disabled={loading}>
             {loading ? 'Creating account...' : 'Create account'}
           </button>
+          
+          <div className="divider">or</div>
+          
+          <div className="google-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error('Google Sign-Up failed')}
+              theme="filled_black"
+              shape="pill"
+              text="signup_with"
+            />
+          </div>
           <div className="auth-footer">
             Already have an account? <Link to="/login" className="auth-link">Sign in</Link>
           </div>
