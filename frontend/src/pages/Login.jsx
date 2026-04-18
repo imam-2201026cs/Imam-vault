@@ -8,6 +8,7 @@ export default function Login() {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading]   = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -28,31 +29,46 @@ export default function Login() {
   return (
     <>
       <style>{`
-        .auth-page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; background:#f8f9ff; }
-        .auth-card { background:#fff; border:1px solid #e8e8f0; border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:400px; box-shadow:0 4px 24px rgba(83,74,183,.07); }
-        .auth-logo { font-size:28px; font-weight:800; color:#534AB7; margin-bottom:6px; }
-        .auth-sub { font-size:14px; color:#888; margin-bottom:28px; }
-        .auth-label { font-size:12px; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; display:block; }
-        .auth-input { width:100%; padding:11px 14px; border-radius:8px; border:1px solid #ddd; font-size:14px; margin-bottom:16px; outline:none; box-sizing:border-box; }
-        .auth-input:focus { border-color:#534AB7; box-shadow:0 0 0 3px rgba(83,74,183,.08); }
-        .auth-btn { width:100%; padding:12px; border-radius:10px; background:#534AB7; color:#fff; border:none; font-size:15px; font-weight:700; cursor:pointer; margin-top:4px; }
-        .auth-btn:hover { opacity:.92; }
+        .auth-page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; background: url('/dsa-bg.png') center/cover no-repeat fixed; color:#fff; }
+        .auth-card { background:rgba(15, 20, 30, 0.7); backdrop-filter:blur(20px); border:1px solid rgba(255, 255, 255, 0.1); border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+        .auth-logo { font-size:28px; font-weight:800; color:#4ade80; margin-bottom:6px; text-shadow: 0 0 10px rgba(74,222,128,0.3); }
+        .auth-sub { font-size:14px; color:#a0aec0; margin-bottom:28px; }
+        .auth-label { font-size:12px; font-weight:700; color:#cbd5e1; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; display:block; }
+        .auth-input { width:100%; padding:11px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); font-size:14px; margin-bottom:16px; outline:none; box-sizing:border-box; background:rgba(255,255,255,0.05); color:#fff; }
+        .auth-input::placeholder { color:#64748b; }
+        .auth-input:focus { border-color:#4ade80; box-shadow:0 0 0 3px rgba(74,222,128,0.15); background:rgba(255,255,255,0.08); }
+        .password-group { position:relative; margin-bottom:16px; }
+        .password-group .auth-input { margin-bottom:0; padding-right:40px; }
+        .pwd-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#a0aec0; cursor:pointer; padding:0; display:flex; align-items:center; }
+        .pwd-toggle:hover { color:#fff; }
+        .auth-btn { width:100%; padding:12px; border-radius:10px; background:#4ade80; color:#0f172a; border:none; font-size:15px; font-weight:700; cursor:pointer; margin-top:10px; transition:all 0.2s; }
+        .auth-btn:hover { background:#22c55e; box-shadow:0 0 15px rgba(74,222,128,0.4); }
         .auth-btn:disabled { opacity:.6; cursor:not-allowed; }
-        .auth-footer { text-align:center; margin-top:20px; font-size:13px; color:#888; }
-        .auth-link { color:#534AB7; font-weight:600; text-decoration:none; }
+        .forgot-link { display:block; text-align:right; margin-top:-8px; margin-bottom:16px; font-size:13px; color:#cbd5e1; text-decoration:none; transition:color 0.2s; }
+        .forgot-link:hover { color:#4ade80; }
+        .auth-footer { text-align:center; margin-top:24px; font-size:13px; color:#a0aec0; }
+        .auth-link { color:#4ade80; font-weight:600; text-decoration:none; }
       `}</style>
       <div className="auth-page">
         <div className="auth-card">
           <div className="auth-logo">ReviseIt</div>
           <p className="auth-sub">Welcome back! Sign in to continue.</p>
-          <label className="auth-label">Email</label>
-          <input className="auth-input" type="email" placeholder="you@email.com"
+          <input className="auth-input" type="email" placeholder="Email"
             value={email} onChange={e => setEmail(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
-          <label className="auth-label">Password</label>
-          <input className="auth-input" type="password" placeholder="••••••••"
-            value={password} onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
+          <div className="password-group">
+            <input className="auth-input" type={showPassword ? "text" : "password"} placeholder="Password"
+              value={password} onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
+            <button type="button" className="pwd-toggle" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              )}
+            </button>
+          </div>
+          <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
           <button className="auth-btn" onClick={handleSubmit} disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>

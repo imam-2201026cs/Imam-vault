@@ -9,6 +9,7 @@ import TodayRevisions from './pages/TodayRevisions';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import GlobalAlarm from './components/GlobalAlarm';
 
 const PrivateRoute = ({ children }) => {
   const { token } = useAuth();
@@ -19,6 +20,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
+      <GlobalAlarm />
       <Routes>
         <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />

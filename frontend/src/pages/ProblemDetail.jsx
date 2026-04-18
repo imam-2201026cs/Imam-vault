@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../api/axios';
 import RevisionModal from '../components/RevisionModal';
+import PageTransition from '../components/PageTransition';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const diffColor = { Easy:'#27500A', Medium:'#633806', Hard:'#791F1F' };
 const diffBg    = { Easy:'#EAF3DE', Medium:'#FAEEDA', Hard:'#FCEBEB' };
@@ -14,6 +16,8 @@ export default function ProblemDetail() {
   const [revisions, setRevisions]   = useState([]);
   const [showModal, setShowModal]   = useState(false);
   const [confidence, setConfidence] = useState({});
+  const [hint, setHint]             = useState(null);
+  const [loadingHint, setLoadingHint] = useState(false);
 
   const load = () => API.get(`/problems/${id}`).then(r => {
     setProblem(r.data.problem);
@@ -42,6 +46,18 @@ export default function ProblemDetail() {
     load();
   };
 
+  const fetchAIHint = async () => {
+    try {
+      setLoadingHint(true);
+      const res = await API.post(`/problems/${id}/hint`);
+      setHint(res.data.hint);
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Failed to get hint');
+    } finally {
+      setLoadingHint(false);
+    }
+  };
+
   if (!problem) return <div style={{ padding:'2rem', color:'#aaa', textAlign:'center' }}>Loading...</div>;
 
   const upcoming = revisions.filter(r => !r.completed);
@@ -55,7 +71,7 @@ export default function ProblemDetail() {
     <>
       <style>{`
         .detail-page { max-width:760px; margin:0 auto; padding:1.5rem 1rem; }
-        .detail-card { background:#fff; border:1px solid #e8e8f0; border-radius:16px; padding:1.75rem; margin-bottom:16px; }
+        .detail-card { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius:16px; padding:1.75rem; margin-bottom:16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
         .detail-top-row { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:12px; }
         .detail-title { font-size:22px; font-weight:700; color:#1a1a2e; margin-bottom:8px; }
         .detail-badges { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
@@ -64,8 +80,12 @@ export default function ProblemDetail() {
         .detail-section-label { font-size:13px; font-weight:700; color:#888; margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em; }
         .detail-body { font-size:14px; color:#444; line-height:1.7; white-space:pre-wrap; }
         .detail-actions { margin-top:20px; display:flex; gap:8px; flex-wrap:wrap; }
-        .detail-btn { padding:9px 18px; border-radius:8px; background:#534AB7; color:#fff; border:none; font-size:14px; font-weight:600; cursor:pointer; }
-        .detail-del-btn { padding:9px 18px; border-radius:8px; background:#fff; color:#e24b4a; border:1px solid #fca5a5; font-size:14px; cursor:pointer; }
+        .detail-btn { padding:9px 18px; border-radius:8px; background: rgba(83, 74, 183, 0.9); color:#fff; border:none; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
+        .detail-btn:hover { background: #534AB7; transform:translateY(-1px); }
+        .detail-hint-btn { padding:9px 18px; border-radius:8px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color:#fff; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 4px 15px rgba(251,194,235,0.4); }
+        .detail-hint-btn:hover { box-shadow:0 6px 20px rgba(251,194,235,0.6); transform:translateY(-2px); }
+        .detail-del-btn { padding:9px 18px; border-radius:8px; background: rgba(255,255,255,0.6); color:#e24b4a; border:1px solid #fca5a5; font-size:14px; cursor:pointer; transition:all .2s; }
+        .detail-del-btn:hover { background: #fff; }
         .detail-rev-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0f5; gap:12px; flex-wrap:wrap; }
         .detail-rev-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; flex-wrap:wrap; }
         .detail-done-btn { padding:5px 12px; border-radius:8px; background:#EAF3DE; color:#27500A; border:1px solid #C0DD97; font-size:12px; cursor:pointer; font-weight:600; }
@@ -83,6 +103,7 @@ export default function ProblemDetail() {
           .detail-conf-select { flex:1; }
         }
       `}</style>
+      <PageTransition>
       <div className="detail-page">
         {showModal && (
           <RevisionModal problemId={id} problemTitle={problem.title}
@@ -137,8 +158,27 @@ export default function ProblemDetail() {
 
           <div className="detail-actions">
             <button className="detail-btn" onClick={() => setShowModal(true)}>+ Schedule Revision</button>
+            <button className="detail-hint-btn" onClick={fetchAIHint} disabled={loadingHint}>
+              {loadingHint ? 'Generating...' : '💡 Get AI Hint'}
+            </button>
             <button className="detail-del-btn" onClick={handleDelete}>Delete</button>
           </div>
+          
+          <AnimatePresence>
+            {hint && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{ background: 'rgba(251, 194, 235, 0.15)', border: '1px solid rgba(251, 194, 235, 0.4)', borderRadius: '12px', padding: '16px' }}>
+                  <p className="detail-section-label" style={{ color: '#a18cd1' }}>✨ AI Hint</p>
+                  <p className="detail-body" style={{ color: '#444' }}>{hint}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="detail-card">
@@ -190,6 +230,7 @@ export default function ProblemDetail() {
           )}
         </div>
       </div>
+      </PageTransition>
     </>
   );
 }
