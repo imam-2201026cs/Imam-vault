@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../api/axios';
 import { playAlarmSound } from '../utils/notifications';
+import PageTransition from '../components/PageTransition';
+import { TypeAnimation } from 'react-type-animation';
 
 const diffBg    = { Easy:'#EAF3DE', Medium:'#FAEEDA', Hard:'#FCEBEB' };
 const diffColor = { Easy:'#27500A', Medium:'#633806', Hard:'#791F1F' };
@@ -66,8 +68,8 @@ export default function TodayRevisions() {
         .today-heading { font-size:22px; font-weight:700; color:${dm?'#e8e8f8':'#1a1a2e'}; margin-bottom:4px; }
         .today-sub { font-size:14px; color:${dm?'#aaa':'#888'}; margin-bottom:24px; }
         .today-section-label { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
-        .today-card { background:${dm?'#1e1e2e':'#fff'}; border:1px solid ${dm?'#333':'#e8e8f0'}; border-radius:12px; padding:1rem 1.25rem; margin-bottom:10px; display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer; gap:12px; transition:border-color .15s; }
-        .today-card:hover { border-color:#534AB7; }
+        .today-card { background: ${dm?'rgba(30,30,46,0.7)':'rgba(255,255,255,0.45)'}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border:1px solid ${dm?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.5)'}; border-radius:16px; padding:1rem 1.25rem; margin-bottom:10px; display:flex; justify-content:space-between; align-items:flex-start; cursor:pointer; gap:12px; transition:all .25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .today-card:hover { border-color: ${dm?'rgba(255,255,255,0.2)':'rgba(255,255,255,0.8)'}; box-shadow: 0 8px 24px rgba(83,74,183,.1); transform: translateY(-3px); background: ${dm?'rgba(40,40,60,0.8)':'rgba(255,255,255,0.6)'}; }
         .today-card-left { flex:1; min-width:0; }
         .today-card-right { flex-shrink:0; text-align:right; }
         .today-title { font-size:15px; font-weight:600; color:${dm?'#e8e8f8':'#1a1a2e'}; }
@@ -91,9 +93,12 @@ export default function TodayRevisions() {
           .today-conf-select { width:100%; }
         }
       `}</style>
+      <PageTransition>
       <div className="today-page" style={{ background: dm ? '#0f0f1a' : 'transparent', minHeight: '90vh', transition:'background .3s' }}>
         <div className="today-topbar">
-          <h2 className="today-heading">Today's revisions</h2>
+          <h2 className="today-heading">
+            <TypeAnimation sequence={["Today's revisions", 3000, "What's up for today?", 3000, "Time to focus", 3000]} wrapper="span" cursor={true} repeat={Infinity} />
+          </h2>
           <button className="dark-toggle" onClick={() => setDarkMode(d => !d)}>
             {dm ? '☀️ Light' : '🌙 Dark'}
           </button>
@@ -164,6 +169,7 @@ export default function TodayRevisions() {
           </>
         )}
       </div>
+      </PageTransition>
     </>
   );
 }
