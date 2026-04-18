@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
@@ -22,6 +23,19 @@ export default function Login() {
       navigate('/', { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Login failed');
+    }
+    setLoading(false);
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    try {
+      const res = await API.post('/auth/google', { credential: credentialResponse.credential });
+      login(res.data.token);
+      toast.success('Google sign-in successful!');
+      navigate('/', { replace: true });
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Google login failed');
     }
     setLoading(false);
   };
@@ -48,6 +62,11 @@ export default function Login() {
         .forgot-link:hover { color:#4ade80; }
         .auth-footer { text-align:center; margin-top:24px; font-size:13px; color:#a0aec0; }
         .auth-link { color:#4ade80; font-weight:600; text-decoration:none; }
+        .google-wrapper { margin-top: 16px; display: flex; justify-content: center; }
+        .divider { display: flex; align-items: center; text-align: center; margin: 20px 0; color: #64748b; font-size: 13px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
       `}</style>
       <div className="auth-page">
         <div className="auth-card">
@@ -72,6 +91,17 @@ export default function Login() {
           <button className="auth-btn" onClick={handleSubmit} disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
+          
+          <div className="divider">or</div>
+          
+          <div className="google-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error('Google Sign-In failed')}
+              theme="filled_black"
+              shape="pill"
+            />
+          </div>
           <div className="auth-footer">
             Don't have an account? <Link to="/register" className="auth-link">Register</Link>
           </div>
