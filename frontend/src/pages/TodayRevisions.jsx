@@ -12,33 +12,14 @@ const diffColor = { Easy:'#27500A', Medium:'#633806', Hard:'#791F1F' };
 export default function TodayRevisions() {
   const [revisions, setRevisions]       = useState([]);
   const [confidence, setConfidence]     = useState({});
-  const [alarmRevision, setAlarmRevision] = useState(null);
   const [darkMode, setDarkMode]         = useState(() => localStorage.getItem('darkMode') === 'true');
-  const alarmCheckerRef = useRef(null);
   const navigate = useNavigate();
 
   const load = () => API.get('/revisions/today').then(r => setRevisions(r.data));
 
   useEffect(() => {
     load();
-    // Check every 30s for due revisions and ring alarm
-    alarmCheckerRef.current = setInterval(() => {
-      API.get('/revisions/today').then(r => {
-        const now = new Date();
-        const due = r.data.find(rev => {
-          if (rev.completed) return false;
-          const diff = Math.abs(new Date(rev.scheduledAt) - now);
-          return diff < 60000;
-        });
-        if (due && !document.hidden) {
-          playAlarmSound();
-          setAlarmRevision(due);
-          toast(`⏰ Time to revise: ${due.problem.title}`, { duration: 8000, icon: '🔔' });
-        }
-        setRevisions(r.data);
-      });
-    }, 30000);
-    return () => clearInterval(alarmCheckerRef.current);
+    // Alarm logic has been moved to GlobalAlarm component out of App bounds globally
   }, []);
 
   // Dark mode
@@ -52,7 +33,6 @@ export default function TodayRevisions() {
     const conf = confidence[revId] || 3;
     await API.put(`/revisions/${revId}/complete`, { confidence: conf });
     toast.success('Great job! Marked as revised.');
-    if (alarmRevision?._id === revId) setAlarmRevision(null);
     load();
   };
 
@@ -105,14 +85,7 @@ export default function TodayRevisions() {
         </div>
         <p className="today-sub">{new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</p>
 
-        {alarmRevision && (
-          <div className="alarm-banner">
-            <span className="alarm-text">⏰ Time to revise: {alarmRevision.problem.title}</span>
-            <button className="alarm-btn" onClick={() => { navigate(`/problem/${alarmRevision.problem._id}`); setAlarmRevision(null); }}>
-              Start now →
-            </button>
-          </div>
-        )}
+
 
         {pending.length === 0 && completed.length === 0 && (
           <div className="today-empty">

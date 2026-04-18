@@ -114,7 +114,7 @@ router.get('/analytics', auth, async (req, res) => {
         const dt = new Date(r.updatedAt);
         return dt >= dayStart && dt <= dayEnd;
       }).length;
-      weekActivity.push({ date: dayStart.toISOString().split('T')[0], count });
+      weekActivity.push({ date: dayStart, count });
     }
 
     // Difficulty breakdown
