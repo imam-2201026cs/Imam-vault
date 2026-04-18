@@ -14,10 +14,10 @@ export default function ProblemCard({ problem }) {
   return (
     <>
       <style>{`
-        .pcard { background:#fff; border:1px solid #e8e8f0; border-radius:12px; padding:1rem 1.25rem; cursor:pointer; transition:border-color .15s, box-shadow .15s; }
-        .pcard:hover { border-color:#534AB7; box-shadow:0 2px 8px rgba(83,74,183,.08); }
+        .pcard { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius:16px; padding:1rem 1.25rem; cursor:pointer; transition:all .25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .pcard:hover { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(83,74,183,.1); transform: translateY(-3px); background: rgba(255, 255, 255, 0.6); }
         .pcard-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px; }
-        .pcard-title { font-size:15px; font-weight:600; color:#1a1a2e; margin:0; flex:1; min-width:0; word-break:break-word; }
+        .pcard-title { font-size:15px; font-weight:700; color:#1a1a2e; margin:0; flex:1; min-width:0; word-break:break-word; }
         .pcard-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:99px; flex-shrink:0; }
         .pcard-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
         .pcard-tag { font-size:11px; background:#EEEDFE; color:#3C3489; padding:2px 8px; border-radius:99px; }

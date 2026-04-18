@@ -4,6 +4,9 @@ import toast from 'react-hot-toast';
 import API from '../api/axios';
 import ProblemCard from '../components/ProblemCard';
 import { requestNotificationPermission, subscribeToPush } from '../utils/notifications';
+import PageTransition from '../components/PageTransition';
+import { TypeAnimation } from 'react-type-animation';
+import { motion } from 'framer-motion';
 
 const DIFFICULTIES = ['All', 'Easy', 'Medium', 'Hard'];
 
@@ -57,23 +60,28 @@ export default function Dashboard() {
     <>
       <style>{`
         .dash-page { max-width:960px; margin:0 auto; padding:1.5rem 1rem; }
-        .dash-notif-banner { background:#EEEDFE; border:1px solid #AFA9EC; border-radius:10px; padding:12px 16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-        .dash-notif-text { font-size:13px; color:#3C3489; flex:1; min-width:180px; }
-        .dash-notif-btn { font-size:13px; padding:7px 16px; border-radius:8px; background:#534AB7; color:#fff; border:none; cursor:pointer; font-weight:600; white-space:nowrap; }
-        .dash-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:24px; }
-        .dash-stat { background:#f8f9fa; border-radius:10px; padding:14px 16px; }
-        .dash-stat-num { font-size:26px; font-weight:700; color:#534AB7; line-height:1; }
-        .dash-stat-lbl { font-size:12px; color:#888; margin-top:4px; }
-        .dash-topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap; }
-        .dash-heading { font-size:18px; font-weight:700; color:#1a1a2e; }
+        .dash-notif-banner { background: rgba(238, 237, 254, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border:1px solid rgba(175, 169, 236, 0.5); border-radius:12px; padding:12px 16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .dash-notif-text { font-size:13px; color:#3C3489; flex:1; min-width:180px; font-weight:500; }
+        .dash-notif-btn { font-size:13px; padding:7px 16px; border-radius:8px; background: rgba(83, 74, 183, 0.9); color:#fff; border:none; cursor:pointer; font-weight:600; white-space:nowrap; transition:all .2s; }
+        .dash-notif-btn:hover { background: #534AB7; transform: translateY(-1px); }
+        .dash-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px; }
+        .dash-stat { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius:16px; padding:16px; box-shadow: 0 4px 30px rgba(0,0,0,0.04); transition:transform .2s; }
+        .dash-stat:hover { transform: translateY(-3px); }
+        .dash-stat-num { font-size:28px; font-weight:800; color:#4a3fb3; line-height:1; }
+        .dash-stat-lbl { font-size:13px; color:#666; font-weight:500; margin-top:6px; }
+        .dash-topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap; min-height:30px; }
+        .dash-heading { font-size:22px; font-weight:800; color:#1a1a2e; letter-spacing:-0.5px; }
         .dash-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-        .dash-search { padding:8px 14px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; max-width:200px; outline:none; }
-        .dash-sort { padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:13px; outline:none; background:#fff; cursor:pointer; }
-        .dash-filters { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
-        .dash-filter { padding:5px 14px; border-radius:99px; font-size:13px; border:1px solid; cursor:pointer; font-weight:500; transition:all .15s; }
-        .dash-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(270px, 1fr)); gap:12px; }
-        .dash-empty { text-align:center; padding:3rem 1rem; color:#aaa; }
-        .streak-stat { background:linear-gradient(135deg,#FFF7E6,#FEF3C7); border:1px solid #FCD34D; }
+        .dash-search { padding:10px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.6); font-size:14px; width:100%; max-width:200px; outline:none; background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); transition:all .2s; }
+        .dash-search:focus { background: rgba(255,255,255,0.8); border-color:#534AB7; box-shadow:0 0 0 3px rgba(83,74,183,0.1); }
+        .dash-sort { padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.6); font-size:14px; outline:none; background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); cursor:pointer; font-weight:500; transition:all .2s; }
+        .dash-sort:focus { background: rgba(255,255,255,0.8); }
+        .dash-filters { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+        .dash-filter { padding:6px 16px; border-radius:99px; font-size:14px; border:1px solid rgba(255,255,255,0.6); cursor:pointer; font-weight:600; transition:all .2s; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); color:#555; }
+        .dash-filter:hover { background: rgba(255,255,255,0.8); }
+        .dash-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; }
+        .dash-empty { text-align:center; padding:4rem 1rem; color:#888; background:rgba(255,255,255,0.3); border-radius:16px; backdrop-filter:blur(10px); border:1px dashed rgba(255,255,255,0.6); }
+        .streak-stat { background:linear-gradient(135deg, rgba(255, 247, 230, 0.7), rgba(254, 243, 199, 0.7)); border:1px solid rgba(252, 211, 77, 0.5); }
         .streak-num { color:#D97706 !important; }
         @media (max-width: 480px) {
           .dash-search { max-width:100%; }
@@ -83,6 +91,7 @@ export default function Dashboard() {
           .dash-grid { grid-template-columns:1fr; }
         }
       `}</style>
+      <PageTransition>
       <div className="dash-page">
         {!notifEnabled && (
           <div className="dash-notif-banner">
@@ -108,7 +117,7 @@ export default function Dashboard() {
             <div className="dash-stat-num" style={{ color:'#791F1F' }}>{problems.filter(p => p.difficulty === 'Hard').length}</div>
             <div className="dash-stat-lbl">Hard</div>
           </div>
-          <div className="dash-stat" style={{ background: todayCount > 0 ? '#FAEEDA' : '#f8f9fa' }}>
+          <div className="dash-stat" style={{ background: todayCount > 0 ? 'rgba(250, 238, 218, 0.7)' : undefined }}>
             <div className="dash-stat-num" style={{ color: todayCount > 0 ? '#854F0B' : '#534AB7' }}>{todayCount}</div>
             <div className="dash-stat-lbl">Due today</div>
           </div>
@@ -119,7 +128,9 @@ export default function Dashboard() {
         </div>
 
         <div className="dash-topbar">
-          <h2 className="dash-heading">My problems</h2>
+          <h2 className="dash-heading">
+            <TypeAnimation sequence={['My problems', 2000, 'Keep revising!', 2000, 'My problems', 5000]} wrapper="span" cursor={true} repeat={Infinity} />
+          </h2>
           <div className="dash-controls">
             <input className="dash-search" placeholder="Search title or tag..." value={search}
               onChange={e => setSearch(e.target.value)} />
@@ -134,7 +145,7 @@ export default function Dashboard() {
         <div className="dash-filters">
           {DIFFICULTIES.map(d => (
             <button key={d} className="dash-filter"
-              style={{ background: difficulty === d ? '#534AB7' : '#fff', color: difficulty === d ? '#fff' : '#555', borderColor: difficulty === d ? '#534AB7' : '#ddd' }}
+              style={difficulty === d ? { background: '#534AB7', color: '#fff', borderColor: '#534AB7' } : {}}
               onClick={() => setDifficulty(d)}>{d}</button>
           ))}
         </div>
@@ -152,6 +163,7 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      </PageTransition>
     </>
   );
 }

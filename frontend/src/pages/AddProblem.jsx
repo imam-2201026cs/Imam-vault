@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../api/axios';
+import PageTransition from '../components/PageTransition';
+import { TypeAnimation } from 'react-type-animation';
 
 const PLATFORMS = ['LeetCode', 'GFG', 'HackerRank', 'Codeforces', 'Other'];
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
@@ -35,16 +37,17 @@ export default function AddProblem() {
     <>
       <style>{`
         .add-page { max-width:640px; margin:0 auto; padding:1.5rem 1rem; }
-        .add-heading { font-size:22px; font-weight:700; color:#1a1a2e; margin-bottom:20px; }
-        .add-card { background:#fff; border:1px solid #e8e8f0; border-radius:16px; padding:1.75rem; }
+        .add-heading { font-size:22px; font-weight:800; color:#1a1a2e; margin-bottom:20px; letter-spacing:-.5px; }
+        .add-card { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); border-radius:16px; padding:1.75rem; box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
         .add-label { font-size:12px; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; display:block; }
-        .add-input { width:100%; padding:10px 14px; border-radius:8px; border:1px solid #ddd; font-size:14px; margin-bottom:16px; outline:none; font-family:inherit; box-sizing:border-box; }
-        .add-input:focus { border-color:#534AB7; box-shadow:0 0 0 3px rgba(83,74,183,.08); }
+        .add-input { width:100%; padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); font-size:14px; margin-bottom:16px; outline:none; font-family:inherit; box-sizing:border-box; transition:all .2s; }
+        .add-input:focus { border-color:#534AB7; background: rgba(255,255,255,0.8); box-shadow:0 0 0 3px rgba(83,74,183,.08); }
         .add-textarea { resize:vertical; min-height:90px; line-height:1.6; }
         .add-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
         .add-select-group { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-        .add-select-btn { padding:7px 16px; border-radius:99px; font-size:13px; border:1px solid #ddd; cursor:pointer; font-weight:500; transition:all .15s; background:#fff; }
-        .add-select-btn.active-platform { background:#E6F1FB; color:#0C447C; border-color:#b3d4f5; }
+        .add-select-btn { padding:7px 16px; border-radius:99px; font-size:13px; border:1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); cursor:pointer; font-weight:500; transition:all .2s; }
+        .add-select-btn:hover { background: rgba(255,255,255,0.9); }
+        .add-select-btn.active-platform { background: rgba(230, 241, 251, 0.8); color:#0C447C; border-color:#b3d4f5; }
         .add-select-btn.active-easy { background:#EAF3DE; color:#27500A; border-color:#C0DD97; }
         .add-select-btn.active-medium { background:#FAEEDA; color:#633806; border-color:#f5c896; }
         .add-select-btn.active-hard { background:#FCEBEB; color:#791F1F; border-color:#f5a5a5; }
@@ -56,8 +59,11 @@ export default function AddProblem() {
           .add-row { grid-template-columns:1fr; }
         }
       `}</style>
+      <PageTransition>
       <div className="add-page">
-        <h2 className="add-heading">Add Problem</h2>
+        <h2 className="add-heading">
+          <TypeAnimation sequence={['Add Problem', 2000, 'Keep grinding!', 2000, 'Add Problem', 5000]} wrapper="span" cursor={true} repeat={Infinity} />
+        </h2>
         <div className="add-card">
           <label className="add-label">Problem title *</label>
           <input className="add-input" placeholder="e.g. Two Sum" value={form.title}
@@ -100,6 +106,7 @@ export default function AddProblem() {
           </button>
         </div>
       </div>
+      </PageTransition>
     </>
   );
 }
