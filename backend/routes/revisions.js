@@ -3,6 +3,7 @@ import auth from '../middleware/auth.js';
 import Revision from '../models/Revision.js';
 import Problem from '../models/Problem.js';
 import User from '../models/User.js';
+import { sendEmail } from '../utils/email.js';
 
 const router = Router();
 
@@ -38,6 +39,18 @@ router.post('/', auth, async (req, res) => {
       user: req.user.id,
       scheduledAt: new Date(scheduledAt),
     });
+
+    // Send confirmation email
+    const problem = await Problem.findById(problemId);
+    const user = await User.findById(req.user.id);
+    if (user?.email && problem) {
+      await sendEmail(
+        user.email,
+        `📅 Revision Scheduled: ${problem.title}`,
+        `You have successfully scheduled a revision for "${problem.title}".\n\nScheduled for: ${new Date(scheduledAt).toLocaleString()}\n\nRevise it here: http://localhost:3000/problem/${problem._id}`
+      );
+    }
+
     res.json(revision);
   } catch (err) { res.status(500).json({ msg: err.message }); }
 });
@@ -62,6 +75,17 @@ router.post('/auto-schedule', auth, async (req, res) => {
       user: req.user.id,
       scheduledAt,
     });
+
+    // Send confirmation email
+    const user = await User.findById(req.user.id);
+    if (user?.email && problem) {
+      await sendEmail(
+        user.email,
+        `🤖 Auto-Scheduled Revision: ${problem.title}`,
+        `Modern algorithms have scheduled your next revision for "${problem.title}".\n\nScheduled for: ${scheduledAt.toLocaleString()}\n\nKeep up the great work!\n\nRevise it here: http://localhost:3000/problem/${problem._id}`
+      );
+    }
+
     res.json(revision);
   } catch (err) { res.status(500).json({ msg: err.message }); }
 });
@@ -75,7 +99,10 @@ router.get('/today', auth, async (req, res) => {
       user: req.user.id,
       scheduledAt: { $gte: start, $lte: end },
     }).populate('problem', 'title platform difficulty tags url');
-    res.json(revisions);
+
+    // Safety filter to remove revisions where problem is null
+    const validRevisions = revisions.filter(r => r.problem !== null);
+    res.json(validRevisions);
   } catch (err) { res.status(500).json({ msg: err.message }); }
 });
 
@@ -89,7 +116,10 @@ router.get('/upcoming', auth, async (req, res) => {
     })
       .populate('problem', 'title platform difficulty tags')
       .sort({ scheduledAt: 1 });
-    res.json(revisions);
+    
+    // Safety filter
+    const validRevisions = revisions.filter(r => r.problem !== null);
+    res.json(validRevisions);
   } catch (err) { res.status(500).json({ msg: err.message }); }
 });
 
