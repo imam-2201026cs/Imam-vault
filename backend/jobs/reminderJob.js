@@ -1,20 +1,14 @@
 import cron from 'node-cron';
 import webpush from 'web-push';
-import nodemailer from 'nodemailer';
 import Revision from '../models/Revision.js';
 import User from '../models/User.js';
+import { sendEmail } from '../utils/email.js';
 
 webpush.setVapidDetails(
   'mailto:' + process.env.VAPID_EMAIL,
   process.env.VAPID_PUBLIC_KEY,
   process.env.VAPID_PRIVATE_KEY
 );
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: process.env.SMTP_PORT || 587,
-  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-});
 
 // Runs every minute — checks for revisions due in the next 60 seconds
 cron.schedule('* * * * *', async () => {
@@ -50,14 +44,13 @@ cron.schedule('* * * * *', async () => {
         }
       }
 
-      if (user?.email && process.env.SMTP_USER) {
+      if (user?.email) {
         try {
-          await transporter.sendMail({
-            from: process.env.FROM_EMAIL || '"ReviseIt" <noreply@reviseit.com>',
-            to: user.email,
-            subject: `⏰ Revise now: ${rev.problem.title}`,
-            html: `<h3>Time to revise!</h3><p>Your scheduled revision for <strong>${rev.problem.title}</strong> is due right now.</p><p><a href="http://localhost:3000/problem/${rev.problem._id}">Click here to revise it</a></p>`
-          });
+          await sendEmail(
+            user.email,
+            `⏰ Revise now: ${rev.problem.title}`,
+            `Time to revise!\n\nYour scheduled revision for ${rev.problem.title} is due right now.\n\nRevise it here: http://localhost:3000/problem/${rev.problem._id}`
+          );
           console.log(`Email reminder sent to ${user.email}`);
         } catch (mailErr) {
           console.error('Email failed:', mailErr.message);
