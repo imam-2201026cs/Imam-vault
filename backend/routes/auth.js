@@ -54,7 +54,7 @@ router.post('/google', async (req, res) => {
     });
     const payload = ticket.getPayload();
     const { email, name, sub: googleId } = payload;
-    
+
     let user = await User.findOne({ email });
     if (!user) {
       user = await User.create({ name, email, googleId });
@@ -63,7 +63,7 @@ router.post('/google', async (req, res) => {
       user.googleId = googleId;
       await user.save();
     }
-    
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
     res.json({ token, name: user.name });
   } catch (err) {
@@ -78,29 +78,29 @@ router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: 'User with this email does not exist' });
-    
+
     // Generate simple 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     user.resetPasswordToken = otp;
     user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
     await user.save();
-    
+
     const emailResult = await sendEmail(
-      email, 
-      'Password Reset Request - ReviseIt', 
+      email,
+      'Password Reset Request - ReviseIt',
       `Your password reset code is: ${otp}\n\nThis code is valid for 15 minutes.`
     );
-    
+
     if (!process.env.SMTP_USER) {
       // In development mode without actual SMTP, return the OTP directly to frontend so the user isn't stuck.
-      return res.json({ 
+      return res.json({
         msg: 'Reset code generated (DEV MODE)! Check your screen.',
         devOtp: otp,
-        previewUrl: emailResult?.previewUrl 
+        previewUrl: emailResult?.previewUrl
       });
     }
-    
+
     res.json({ msg: 'Reset code sent to your email.' });
   } catch (err) {
     console.error(err);
@@ -117,14 +117,14 @@ router.post('/reset-password', async (req, res) => {
       resetPasswordToken: otp,
       resetPasswordExpires: { $gt: Date.now() }
     });
-    
+
     if (!user) return res.status(400).json({ msg: 'Invalid or expired OTP' });
-    
+
     user.password = await bcrypt.hash(password, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
-    
+
     res.json({ msg: 'Password reset successful. You can now login.' });
   } catch (err) {
     console.error(err);
