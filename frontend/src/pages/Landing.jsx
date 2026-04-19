@@ -9,7 +9,7 @@ export default function Landing() {
         .landing-container { min-height:100vh; color:#1a1a2e; }
         .hero-section { min-height:90vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; }
         .hero-title { font-size:clamp(2.5rem, 8vw, 4.5rem); font-weight:900; letter-spacing:-2px; line-height:1.1; margin-bottom:1.5rem; color:#1a1a2e; }
-        .hero-subtitle { font-size:clamp(1rem, 4vw, 1.25rem); color:#475569; max-width:600px; margin-bottom:2.5rem; line-height:1.6; }
+        .hero-subtitle { font-size:clamp(1rem, 4vw, 1.25rem); color:#475569; max-width:600px; margin:0 auto 2.5rem; line-height:1.6; }
         .gradient-text { background: linear-gradient(90deg, #534AB7, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .cta-group { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
@@ -46,10 +46,12 @@ export default function Landing() {
             </span>
           </h1>
           <p className="hero-subtitle">
-            Don't just solve problems—remember them. ReviseIt helps you track your DSA journey and reminds you when it's time to revise.
+            <span style={{ fontWeight: 700, color: '#534AB7' }}>Solve. Track. Master.</span><br />
+            Accelerate your coding career with a data-driven approach to Data Structures and Algorithms. 
+            Our automated spaced-repetition system ensures you never forget a concept again.
           </p>
           <div className="cta-group">
-            <Link to="/register" className="btn-primary">Get Started for Free</Link>
+            <Link to="/register" className="btn-primary">Start Your Journey</Link>
             <Link to="/login" className="btn-secondary">Sign In</Link>
           </div>
         </motion.div>
@@ -64,17 +66,22 @@ export default function Landing() {
         <div className="feature-card">
           <div className="feature-icon">🚀</div>
           <h3 className="feature-title">Smart Scheduling</h3>
-          <p className="feature-desc">Our algorithm calculates the perfect time to revisit a problem based on its difficulty and your performance.</p>
+          <p className="feature-desc">Our intelligent algorithm calculates the optimal time to revisit problems based on their difficulty so you revise only when needed.</p>
         </div>
         <div className="feature-card">
           <div className="feature-icon">📊</div>
           <h3 className="feature-title">Data-Backed Insights</h3>
-          <p className="feature-desc">Visualize your progress with detailed analytics on difficulty distribution and revision consistency.</p>
+          <p className="feature-desc">Visualize your growth with advanced analytics. Track your mastery over time and identify weak spots in your preparation.</p>
+        </div>
+        <div className="feature-card">
+          <div className="feature-icon">🔔</div>
+          <h3 className="feature-title">Seamless Reminders</h3>
+          <p className="feature-desc">Stay on top of your goals with automated <strong>Email Notifications</strong> and <strong>Smart Alarms</strong>. We keep you accountable every day.</p>
         </div>
         <div className="feature-card">
           <div className="feature-icon">🔥</div>
-          <h3 className="feature-title">Gamified Motivation</h3>
-          <p className="feature-desc">Keep your streak alive and watch your proficiency grow as you build a daily habit of consistent revision.</p>
+          <h3 className="feature-title">Proven Consistency</h3>
+          <p className="feature-desc">Build a rock-solid habit with gamified streaks. Maintain your momentum and turn coding preparation into a daily winning routine.</p>
         </div>
       </motion.section>
 
