@@ -46,20 +46,37 @@ router.get('/profile', auth, async (req, res) => {
 // Google Auth verification
 router.post('/google', async (req, res) => {
   try {
-    const { credential } = req.body;
-    // Verify the ID token (Skip client ID check if we don't have a strict strict one configured yet, but ideally pass audience)
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID || undefined, // Specify the CLIENT_ID of the app that accesses the backend
-    });
-    const payload = ticket.getPayload();
-    const { email, name, sub: googleId } = payload;
+    const { credential, access_token } = req.body;
+    let email, name, googleId;
+
+    if (access_token) {
+      // useGoogleLogin hook sends an access_token — fetch user info from Google
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
+      );
+      if (!response.ok) throw new Error('Failed to fetch Google user info');
+      const info = await response.json();
+      email    = info.email;
+      name     = info.name;
+      googleId = info.sub;
+    } else if (credential) {
+      // Legacy GoogleLogin component sends an id_token credential
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID || undefined,
+      });
+      const payload = ticket.getPayload();
+      email    = payload.email;
+      name     = payload.name;
+      googleId = payload.sub;
+    } else {
+      return res.status(400).json({ msg: 'No Google credential provided' });
+    }
 
     let user = await User.findOne({ email });
     if (!user) {
       user = await User.create({ name, email, googleId });
     } else if (!user.googleId) {
-      // Link the account
       user.googleId = googleId;
       await user.save();
     }
@@ -71,6 +88,7 @@ router.post('/google', async (req, res) => {
     res.status(500).json({ msg: 'Google authentication failed' });
   }
 });
+
 
 // Forgot Password
 router.post('/forgot-password', async (req, res) => {
