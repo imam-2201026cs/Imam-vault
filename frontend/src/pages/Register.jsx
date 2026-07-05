@@ -44,6 +44,9 @@ export default function Register() {
   const googleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
     onError: () => toast.error('Google Sign-Up failed'),
+    flow: 'implicit',
+    ux_mode: 'popup',
+    prompt: 'select_account',
   });
 
   return (

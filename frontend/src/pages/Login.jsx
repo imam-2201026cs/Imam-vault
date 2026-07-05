@@ -43,6 +43,9 @@ export default function Login() {
   const googleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
     onError: () => toast.error('Google Sign-In failed'),
+    flow: 'implicit',
+    ux_mode: 'popup',
+    prompt: 'select_account',
   });
 
   return (

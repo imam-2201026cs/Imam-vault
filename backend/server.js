@@ -12,7 +12,10 @@ import notificationRoutes from './routes/notifications.js';
 const app = express();
 connectDB();
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: [
+    'http://localhost:3000',
+    'https://imam-vault-frontend.vercel.app'
+  ],
   credentials: true
 }));
 app.use(express.json());

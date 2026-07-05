@@ -1,13 +1,49 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { TypeAnimation } from 'react-type-animation';
 
 export default function Landing() {
+  const [activeStep, setActiveStep] = useState(0);
+
+  const steps = [
+    {
+      title: "Secure Entry",
+      desc: "Start your coding journey with a beautiful, secure authentication experience.",
+      img: "/assets/login_step.png",
+      url: "https://reviseit.app/login"
+    },
+    {
+      title: "Centralized Dashboard",
+      desc: "Get a bird's-eye view of your progress, streaks, and upcoming revisions.",
+      img: "/assets/dashboard_step.png",
+      url: "https://reviseit.app/dashboard"
+    },
+    {
+      title: "Smart Problem Adding",
+      desc: "Add problems with tags, difficulty levels, and personalized approach notes.",
+      img: "/assets/add_problem_step.png",
+      url: "https://reviseit.app/add-problem"
+    },
+    {
+      title: "Powerful Analytics",
+      desc: "Visualize your growth with advanced charts and consistency tracking.",
+      img: "/assets/analytics_step.png",
+      url: "https://reviseit.app/analytics"
+    },
+    {
+      title: "Daily Focus",
+      desc: "Stay on top of what matters most with personalized daily revision goals.",
+      img: "/assets/today_step.png",
+      url: "https://reviseit.app/today"
+    }
+  ];
+
   return (
     <div className="landing-container">
       <style>{`
-        .landing-container { min-height:100vh; color:#1a1a2e; }
-        .hero-section { min-height:90vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; }
+        .landing-container { min-height:100vh; color:#1a1a2e; font-family: 'Inter', sans-serif; }
+        .hero-section { min-height:90vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; background: radial-gradient(circle at top right, rgba(83,74,183,0.05), transparent); }
         .hero-title { font-size:clamp(2.5rem, 8vw, 4.5rem); font-weight:900; letter-spacing:-2px; line-height:1.1; margin-bottom:1.5rem; color:#1a1a2e; }
         .hero-subtitle { font-size:clamp(1rem, 4vw, 1.25rem); color:#475569; max-width:600px; margin:0 auto 2.5rem; line-height:1.6; }
         .gradient-text { background: linear-gradient(90deg, #534AB7, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -25,16 +61,34 @@ export default function Landing() {
         .feature-title { font-size:1.25rem; font-weight:800; margin-bottom:12px; }
         .feature-desc { color:#64748b; font-size:0.95rem; line-height:1.6; }
 
-        .demo-section { padding:4rem 1rem; text-align:center; }
-        .demo-card { max-width:500px; margin:0 auto; background:#fff; border-radius:20px; padding:24px; text-align:left; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border:1px solid #f1f5f9; }
-        .demo-tag { display:inline-block; padding:4px 12px; border-radius:99px; font-size:12px; font-weight:700; background:#ecfdf5; color:#059669; margin-bottom:12px; }
+        .demo-section { padding:6rem 1rem; text-align:center; background:#f8fafc; }
+        
+        .showcase-grid { display:grid; grid-template-columns: 1fr 1.8fr; gap:4rem; max-width:1200px; margin:0 auto; text-align:left; align-items:center; }
+        @media (max-width: 1024px) { .showcase-grid { grid-template-columns: 1fr; gap:3rem; } }
+        
+        .step-list { display:flex; flex-direction:column; gap:16px; }
+        .step-card { padding:28px; border-radius:20px; cursor:pointer; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border:1px solid transparent; background:rgba(255,255,255,0.3); }
+        .step-card.active { background:#fff; border-color:#e2e8f0; box-shadow:0 15px 40px rgba(0,0,0,0.08); transform: scale(1.02) translateX(10px); }
+        .step-number { width:32px; height:32px; background:rgba(83,74,183,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#534AB7; margin-bottom:12px; }
+        .step-card.active .step-number { background:#534AB7; color:#fff; }
+        .step-title { font-size:1.2rem; font-weight:800; margin-bottom:8px; color:#1a1a2e; }
+        .step-desc { font-size:0.95rem; color:#64748b; line-height:1.6; }
+        
+        .browser-mockup { background:#fff; border-radius:24px; overflow:hidden; box-shadow:0 50px 120px rgba(0,0,0,0.18); border:1px solid #e2e8f0; position:relative; }
+        .browser-header { background:#f8fafc; padding:16px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #e2e8f0; }
+        .dot { width:12px; height:12px; border-radius:50%; }
+        .dot-red { background:#ff5f56; }
+        .dot-yellow { background:#ffbd2e; }
+        .dot-green { background:#27c93f; }
+        .address-bar { background:#fff; flex:1; height:28px; border-radius:8px; border:1px solid #e2e8f0; margin-left:14px; display:flex; align-items:center; padding:0 14px; font-size:12px; color:#94a3b8; font-family:monospace; }
+        .browser-screenshot { width:100%; display:block; aspect-ratio: 16/10; object-fit: cover; }
       `}</style>
       
       <section className="hero-section">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
         >
           <h1 className="hero-title">
             Master your Interviews with <br />
@@ -86,22 +140,57 @@ export default function Landing() {
       </motion.section>
 
       <section className="demo-section">
-        <h2 style={{ marginBottom: '2rem', fontSize: '2rem', fontWeight: 800 }}>How it works</h2>
-        <motion.div 
-          className="demo-card"
-          whileHover={{ scale: 1.02 }}
-        >
-          <span className="demo-tag">MEDIUM</span>
-          <h4 style={{ fontSize: '1.25rem', marginBottom: '8px', fontWeight: 700 }}>33. Search in Rotated Sorted Array</h4>
-          <p style={{ color: '#64748b', fontSize: '14px' }}>Last revised: 2 days ago</p>
-          <div style={{ marginTop: '16px', height: '8px', background: '#f1f5f9', borderRadius: '4px' }}>
-            <div style={{ width: '65%', height: '100%', background: '#534AB7', borderRadius: '4px' }}></div>
+        <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 style={{ marginBottom: '4rem', fontSize: 'clamp(2.5rem, 6vw, 3.5rem)', fontWeight: 900, color: '#1a1a2e', textAlign: 'center' }}>
+              Master Your <span className="gradient-text">Workflow</span>
+            </h2>
+          </motion.div>
+          
+          <div className="showcase-grid">
+            <div className="step-list">
+              {steps.map((step, idx) => (
+                <div 
+                  key={idx}
+                  className={`step-card ${activeStep === idx ? 'active' : ''}`}
+                  onClick={() => setActiveStep(idx)}
+                >
+                  <div className="step-number">{idx + 1}</div>
+                  <h3 className="step-title">{step.title}</h3>
+                  <p className="step-desc">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="browser-mockup">
+              <div className="browser-header">
+                <div className="dot dot-red"></div>
+                <div className="dot dot-yellow"></div>
+                <div className="dot dot-green"></div>
+                <div className="address-bar">{steps[activeStep].url}</div>
+              </div>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeStep}
+                  src={steps[activeStep].img}
+                  alt={steps[activeStep].title}
+                  className="browser-screenshot"
+                  initial={{ opacity: 0, scale: 0.98, x: 20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 1.02, x: -20 }}
+                  transition={{ duration: 0.5, ease: "anticipate" }}
+                />
+              </AnimatePresence>
+            </div>
           </div>
-          <p style={{ marginTop: '12px', fontSize: '13px', fontWeight: 600, color: '#534AB7' }}>Scheduled for: Tomorrow 🔔</p>
-        </motion.div>
+        </div>
       </section>
 
-      <footer style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
+      <footer style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '14px', borderTop: '1px solid #f1f5f9' }}>
         © {new Date().getFullYear()} ReviseIt. Build your dream career.
       </footer>
     </div>
