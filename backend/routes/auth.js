@@ -11,6 +11,10 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy');
 
 const router = Router();
 
+router.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;

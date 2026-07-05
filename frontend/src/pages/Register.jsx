@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +13,11 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Ping backend on mount to wake up Render's free-tier server
+  useEffect(() => {
+    API.get('/auth/ping').catch(() => {});
+  }, []);
 
   const handleSubmit = async () => {
     if (!name || !email || !password) return toast.error('Fill in all fields');
@@ -31,12 +36,19 @@ export default function Register() {
   const handleGoogleSuccess = async (tokenResponse) => {
     setLoading(true);
     try {
-      const res = await API.post('/auth/google', { access_token: tokenResponse.access_token });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      const res = await API.post('/auth/google', { access_token: tokenResponse.access_token }, { signal: controller.signal });
+      clearTimeout(timeout);
       login(res.data.token);
       toast.success('Google sign-up successful!');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.msg || 'Google sign-up failed');
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
+        toast.error('Server is waking up, please try again in a moment');
+      } else {
+        toast.error(err.response?.data?.msg || 'Google sign-up failed');
+      }
     }
     setLoading(false);
   };
